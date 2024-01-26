@@ -1,4 +1,4 @@
-var awarenessRadius = 50; // Example value, adjust as needed
+var awarenessRadius = 100; // Example value, adjust as needed
 
 // all of the global variables for dynamics
 var x=[];
@@ -212,6 +212,7 @@ function update(){
         //col[i] += tcol;
         colavg += col[i];
     }
+    
     for (var j = 0; j < n; j++) {
             if (i !== j) {
                 var dx = x[j] - x[i];
@@ -221,7 +222,7 @@ function update(){
                 if (distance < awarenessRadius) {
                     if (type[i] !== type[j]) {
                         // Apply repulsive force if a mosher is too close to a non-mosher
-                        var repulseStrength = 1.0; // Adjust this value as needed
+                        var repulseStrength = 3.0; // Adjust this value as needed
                         var repulseX = repulseStrength * (dx / distance);
                         var repulseY = repulseStrength * (dy / distance);
 
