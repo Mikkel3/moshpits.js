@@ -1,4 +1,4 @@
-var awarenessRadius = 50; // Example value, adjust as needed
+var awarenessRadius = 150; // Example value, adjust as needed
 
 // all of the global variables for dynamics
 var x=[];
