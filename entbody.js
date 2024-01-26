@@ -1,5 +1,5 @@
 var awarenessRadius = 150; // Example value, adjust as needed
-var mosherRepulsion = 1; // Set repulsion for mosher/non mosher interaction
+var mosherRepulsion = 3; // Set repulsion for mosher/non mosher interaction
 
 // all of the global variables for dynamics
 var x=[];
