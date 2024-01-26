@@ -221,7 +221,7 @@ function update(){
 
                 if (distance < awarenessRadius && type[i] !== type[j]) {
                     // Apply repulsive force if a mosher is too close to a non-mosher
-                    var repulseStrength = 0; // Adjust this value as needed
+                    var repulseStrength = 0.5; // Adjust this value as needed
                     var repulseX = repulseStrength * (dx / distance);
                     var repulseY = repulseStrength * (dy / distance);
 
