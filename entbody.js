@@ -1,4 +1,4 @@
-var awarenessRadius = 100; // Example value, adjust as needed
+var awarenessRadius = 50; // Example value, adjust as needed
 
 // all of the global variables for dynamics
 var x=[];
@@ -212,7 +212,7 @@ function update(){
         //col[i] += tcol;
         colavg += col[i];
         
-                // Repulsive force moshers and non-moshers
+                // Repulsive force logic nested inside the i-th loop
         for (var j = 0; j < n; j++) {
             if (i !== j) {
                 var dx = x[j] - x[i];
