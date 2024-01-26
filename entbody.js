@@ -211,31 +211,28 @@ function update(){
         //var tcol = fx[i]*fx[i] + fy[i]*fy[i];
         //col[i] += tcol;
         colavg += col[i];
-    }
-    
-    for (var j = 0; j < n; j++) {
+        
+                // Repulsive force logic nested inside the i-th loop
+        for (var j = 0; j < n; j++) {
             if (i !== j) {
                 var dx = x[j] - x[i];
                 var dy = y[j] - y[i];
                 var distance = Math.sqrt(dx * dx + dy * dy);
 
-                if (distance < awarenessRadius) {
-                    if (type[i] !== type[j]) {
-                        // Apply repulsive force if a mosher is too close to a non-mosher
-                        var repulseStrength = 3.0; // Adjust this value as needed
-                        var repulseX = repulseStrength * (dx / distance);
-                        var repulseY = repulseStrength * (dy / distance);
+                if (distance < awarenessRadius && type[i] !== type[j]) {
+                    // Apply repulsive force if a mosher is too close to a non-mosher
+                    var repulseStrength = 3.0; // Adjust this value as needed
+                    var repulseX = repulseStrength * (dx / distance);
+                    var repulseY = repulseStrength * (dy / distance);
 
-                        // Apply the force away from the other agent
-                        fx[i] -= repulseX;
-                        fy[i] -= repulseY;
-                        fx[j] += repulseX;
-                        fy[j] += repulseY;
-                    }
+                    fx[i] -= repulseX;
+                    fy[i] -= repulseY;
+                    fx[j] += repulseX;
+                    fy[j] += repulseY;
                 }
             }
         }
-
+    }
 
     for (var i=0; i<n; i++){
         vx[i] += fx[i] * gdt;
