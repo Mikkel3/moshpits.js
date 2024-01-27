@@ -43,7 +43,7 @@ var noise   = 7.0;
 // some other constants that are 1
 var vhappy = 1.0;
 var damp   = 1.0;
-var frac   = 0.01;
+var frac   = 0.02;
 
 // display variables
 var c;
