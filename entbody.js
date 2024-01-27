@@ -1,4 +1,4 @@
-var awarenessRadius = 1; // Example value, adjust as needed
+var awarenessRadius = 3; // Example value, adjust as needed
 var mosherRepulsion = 0.05; // Set repulsion for mosher/non mosher interaction
 var centerAttractionStrength = 0.05; // Attraction to the center
 var dampingStrength = 0.01;  //Damping to prevent circle pits
@@ -43,7 +43,7 @@ var noise   = 7.0;
 // some other constants that are 1
 var vhappy = 1.0;
 var damp   = 1.0;
-var frac   = 0.15;
+var frac   = 0.01;
 
 // display variables
 var c;
