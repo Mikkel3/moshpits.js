@@ -1,6 +1,6 @@
-var awarenessRadius = 0; // Example value, adjust as needed
+var awarenessRadius = 1; // Example value, adjust as needed
 var mosherRepulsion = 0.05; // Set repulsion for mosher/non mosher interaction
-var centerAttractionStrength = 0.5; // Attraction to the center
+var centerAttractionStrength = 0.05; // Attraction to the center
 var dampingStrength = 0.01;  //Damping to prevent circle pits
 var mosherToNonMosherProb = 0.00001; // Chance to stop moshing
 var nonMosherToMosherProb = 0.00001; // Chance to start moshing
