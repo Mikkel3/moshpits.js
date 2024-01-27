@@ -1,5 +1,9 @@
-var awarenessRadius = 11; // Example value, adjust as needed
+var awarenessRadius = 8; // Example value, adjust as needed
 var mosherRepulsion = 0.05; // Set repulsion for mosher/non mosher interaction
+var centerAttractionStrength = 0.05; // Attraction to the center
+var dampingStrength = 0.01;  //Damping to prevent circle pits
+var mosherToNonMosherProb = 0.00001; // Chance to stop moshing
+var nonMosherToMosherProb = 0.00001; // Chance to start moshing
 
 // all of the global variables for dynamics
 var x=[];
@@ -16,7 +20,7 @@ var ivor=[];
 var ivoravg;
 
 // things we can change
-var n = 500;
+var n = 600;
 var pbc = [1,1];
 
 // neighborlist stuff
@@ -32,9 +36,9 @@ var FR= 2*R;
 var gdt = 0.1;
 
 // the variables we change
-var epsilon = 100;
-var flock   = 0.55;
-var noise   = 0.0;
+var epsilon = 50;
+var flock   = 0.8;
+var noise   = 7.0;
 
 // some other constants that are 1
 var vhappy = 1.0;
@@ -141,6 +145,10 @@ function nbl_bin(){
 function update(){
     colavg = 0.0;
     var image = [0,0];
+    
+    var centerX = lx / 2;
+    var centerY = ly / 2;
+    
     for (var i=0; i<n; i++) {
         col[i] = 0.0;
         fx[i] = 0.0; 
@@ -182,7 +190,9 @@ function update(){
                     }
                 }
             }   
-        } }
+        } 
+    }
+    
         var wlen = (wx*wx + wy*wy);
         if (type[i] == 1 && neigh > 0 && wlen > 1e-6){
             fx[i] += flock * wx / wlen;
@@ -213,7 +223,7 @@ function update(){
         //col[i] += tcol;
         colavg += col[i];
         
-                // Repulsive force logic nested inside the i-th loop
+        // Repulsive force logic nested inside the i-th loop
         for (var j = 0; j < n; j++) {
             if (i !== j) {
                 var dx = x[j] - x[i];
@@ -231,6 +241,37 @@ function update(){
                     fy[j] += repulseY;
                 }
             }
+        }
+        
+        // Apply central attraction force for moshers
+        if (type[i] == 1) {
+            var dxCenter = centerX - x[i];
+            var dyCenter = centerY - y[i];
+            fx[i] += centerAttractionStrength * dxCenter;
+            fy[i] += centerAttractionStrength * dyCenter;
+        }
+        
+        // Apply central attraction force for moshers
+        if (type[i] == 1) {
+            var dxCenter = centerX - x[i];
+            var dyCenter = centerY - y[i];
+            fx[i] += centerAttractionStrength * dxCenter;
+            fy[i] += centerAttractionStrength * dyCenter;
+
+            // Apply damping to reduce circular motion
+            var distanceFromCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
+            var dampingFactor = 1 - Math.min(dampingStrength * distanceFromCenter, 1);
+            vx[i] *= dampingFactor;
+            vy[i] *= dampingFactor;
+        }
+        
+        // State change logic
+        if (type[i] == 1 && Math.random() < mosherToNonMosherProb) {
+            // Change mosher to non-mosher
+            type[i] = 0;
+        } else if (type[i] == 0 && Math.random() < nonMosherToMosherProb) {
+            // Change non-mosher to mosher
+            type[i] = 1;
         }
     }
 
