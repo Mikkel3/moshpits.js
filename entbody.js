@@ -43,7 +43,7 @@ var noise   = 7.0;
 // some other constants that are 1
 var vhappy = 1.0;
 var damp   = 1.0;
-var frac   = 0.02;
+var frac   = 0;
 
 // display variables
 var c;
@@ -516,7 +516,7 @@ function update_pause(){
 function update_boxslider(){
 /*    var box = document.getElementById('boxsize');
     var boxsize = Math.floor(lx);
-    var frac = 0.15
+    var frac = 0
     box.min = Math.floor(boxsize*(1-frac));
     box.max = Math.floor(boxsize*(1+frac));
     box.step = (2*frac*boxsize/20);
