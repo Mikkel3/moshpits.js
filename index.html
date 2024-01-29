@@ -68,7 +68,7 @@
                 <span class='eb_span' id="label_frames"></span>
             </div>
             <div>
-                <label class='eb_label' for="frac" title="How many participants are red MASHers (requires restart)">Fraction Red</label>
+                <label class='eb_label' for="frac" title="Max percentager of red MASHers (requires restart)">Fraction Red</label>
                 <input style="width:150px;" type="range" id="frac" min=0.0 max=1.0 step=0.01 value=0.0 onchange="update_frac()"></input>
                 <span class='eb_span' id="label_frac"></span>
             </div>
@@ -113,22 +113,13 @@
     <div id="graphpanel">
         <canvas id='graph' height=100 width=802></canvas>
     </div>
-    <center><p><strong>Keys:</strong> WASD, space, r   ---  <strong>Initial Conditions:</strong>
-        <input type='button' id='init_moshpit' value="Moshpit" onclick='create_moshpit()'></input>
-        <input type='button' id='init_circlepit' value="Circlepit" onclick='create_circlepit()'></input>
-        <input type='button' id='init_chains' value="Force Chains" onclick='create_chains()'></input>
-        <input type='button' id='init_crystal' value="Crystal" onclick='create_crystal()'></input>
-
-        <span class='eb_span' id='tiny_yt'>
-        <object id='yt' type="application/x-shockwave-flash" width="150" height="25" 
-            data="https://www.youtube-nocookie.com/v/W7wpzKvNhfA?version=2&enablejsapi=1&theme=dark">
-            <param name="movie" value="https://www.youtube-nocookie.com/v/W7wpzKvNhfA?version=2&enablejsapi=1&theme=dark" />
-            <param name="wmode" value="transparent" />
+    <center><p><strong>Keys:</strong> WASD, space, r  
         </object>
         </span class='eb_span'>
     </p></center>
-    <p>A JavaScript implementation of the simulations presented 
-    in the <a href="http://arxiv.org/abs/1302.1886">paper</a> 
+    <p>An improved JavaScript implementation of the simulations presented by <a href= "https://github.com/mattbierbaum/moshpits.js">Matt Bierbaum</a> 
+    This simulation includes social rules to make more realistic moshing behaviour
+    Based on the <a href="http://arxiv.org/abs/1302.1886">paper</a> 
     <i>Collective Motion of Moshers at Heavy Metal Concerts</i>.
     More details are available at Itai Cohen's group
     <a href="http://cohengroup.ccmr.cornell.edu/research.php?project=10017">website</a> including
