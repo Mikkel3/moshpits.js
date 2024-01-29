@@ -1,9 +1,11 @@
 var awarenessRadius = 8; // Example value, adjust as needed
 var mosherRepulsion = 0.05; // Set repulsion for mosher/non mosher interaction
-var centerAttractionStrength = 0.05; // Attraction to the center
+var centerAttractionStrength = 0.06; // Attraction to the center
 var dampingStrength = 0.01;  //Damping to prevent circle pits
 var mosherToNonMosherProb = 0.00001; // Chance to stop moshing
 var nonMosherToMosherProb = 0.00001; // Chance to start moshing
+var maxMoshers;
+var frac = 0.20; 
 
 // all of the global variables for dynamics
 var x=[];
@@ -20,7 +22,7 @@ var ivor=[];
 var ivoravg;
 
 // things we can change
-var n = 600;
+var n = 500;
 var pbc = [1,1];
 
 // neighborlist stuff
@@ -37,13 +39,12 @@ var gdt = 0.1;
 
 // the variables we change
 var epsilon = 50;
-var flock   = 0.8;
+var flock   = 1.0;
 var noise   = 7.0;
 
 // some other constants that are 1
 var vhappy = 1.0;
 var damp   = 1.0;
-var frac   = 0.15;
 
 // display variables
 var c;
@@ -149,7 +150,14 @@ function update(){
     var centerX = lx / 2;
     var centerY = ly / 2;
     
+    var mosherCount = 0; 
+    
     for (var i=0; i<n; i++) {
+        //Count number of moshers
+        if (type[i] == 1) {
+            mosherCount++;
+        }
+
         col[i] = 0.0;
         fx[i] = 0.0; 
         fy[i] = 0.0;
@@ -223,7 +231,7 @@ function update(){
         //col[i] += tcol;
         colavg += col[i];
         
-        // Repulsive force logic nested inside the i-th loop
+        // Repulsive force logic 
         for (var j = 0; j < n; j++) {
             if (i !== j) {
                 var dx = x[j] - x[i];
@@ -242,15 +250,7 @@ function update(){
                 }
             }
         }
-        
-        // Apply central attraction force for moshers
-        if (type[i] == 1) {
-            var dxCenter = centerX - x[i];
-            var dyCenter = centerY - y[i];
-            fx[i] += centerAttractionStrength * dxCenter;
-            fy[i] += centerAttractionStrength * dyCenter;
-        }
-        
+
         // Apply central attraction force for moshers
         if (type[i] == 1) {
             var dxCenter = centerX - x[i];
@@ -265,15 +265,23 @@ function update(){
             vy[i] *= dampingFactor;
         }
         
+        // Dynamically adjust probabilities based on frac
+        let dynamicMosherToNonMosherProb = mosherToNonMosherProb * (8*(1 - frac));
+        let dynamicNonMosherToMosherProb = nonMosherToMosherProb * (10*frac);
+
         // State change logic
-        if (type[i] == 1 && Math.random() < mosherToNonMosherProb) {
-            // Change mosher to non-mosher
+        if (type[i] == 1 && Math.random() < dynamicMosherToNonMosherProb) {
             type[i] = 0;
-        } else if (type[i] == 0 && Math.random() < nonMosherToMosherProb) {
-            // Change non-mosher to mosher
-            type[i] = 1;
+        } else if (type[i] == 0 && Math.random() < dynamicNonMosherToMosherProb) {
+            let currentMosherCount = type.reduce((acc, curr) => acc + (curr === 1 ? 1 : 0), 0);
+            if (currentMosherCount < maxMoshers * n) {
+                type[i] = 1;
+            }
         }
     }
+        
+    
+
 
     for (var i=0; i<n; i++){
         vx[i] += fx[i] * gdt;
@@ -357,7 +365,7 @@ function draw_all(x, y, r, lx, ly, cw, ch, ctx) {
 }
 
 function calc_sidelength(){
-    return Math.floor(1.03*Math.sqrt(Math.PI*radius*radius*n));
+    return Math.floor(1.06*Math.sqrt(Math.PI*radius*radius*n));
 }
 
 function init_sidelength(L){
@@ -384,6 +392,8 @@ function init_empty(){
     vx = [];
     vy = [];
     type = [];
+    
+    maxMoshers = Math.floor(frac * n); // Calculate the maximum number of moshers based on frac
 
     for (var i=0; i<n; i++) {
         r.push(0.0);
@@ -400,30 +410,18 @@ function init_empty(){
 
 function init_circle(){
     for (var i=0; i<n; i++) {
-        var tx = lx*Math.random();
-        var ty = ly*Math.random();
-        var tt = 2*Math.PI*Math.random();
+        var tx = lx * Math.random();
+        var ty = ly * Math.random();
+        var tt = 2 * Math.PI * Math.random();
 
-        type[i] = 0;
+        type[i] = 0; // Initialize all as non-moshers
         r[i] = radius;
         x[i] = tx;
         y[i] = ty;
-        var dd = Math.sqrt((tx-lx/2)*(tx-lx/2) + (ty-ly/2)*(ty-ly/2));
-        var rad = Math.sqrt(frac*lx*ly/Math.PI);
-        if (docircle==true){
-            if (frac==0.01){type[0] =1;} 
-            else if (frac==1.0) {type[i] = 1;}
-            else { if (dd<rad){ type[i] = 1; }else{ type[i] = 0; } }
-        } else {
-            if (frac==0.01){type[0] =1;} 
-            else if (frac==1.0) {type[i] = 1;}
-            else { if (Math.random() < frac){ type[i] = 1;} else {type[i]=0;} }
-        }
-        vx[i] = vhappy*(Math.random()-0.5);
-        vy[i] = vhappy*(Math.random()-0.5);
+        vx[i] = vhappy * (Math.random() - 0.5);
+        vy[i] = vhappy * (Math.random() - 0.5);
     }
 }
-
 
 /*======================================================================
   the javascript interface stuff
@@ -460,10 +458,13 @@ function update_frames(){
     frameskip = document.getElementById('frames').value;
     document.getElementById('label_frames').innerHTML = toFixed(frameskip, 2);
 }
+
 function update_frac(){
     frac = document.getElementById('frac').value;
+    maxMoshers = Math.floor(frac * n); // Calculate the maximum number of moshers based on frac
     document.getElementById('label_frac').innerHTML = toFixed(frac, 2);
-}
+ }
+
 function update_colscale(){
     colscale = document.getElementById('colscale').value;
     document.getElementById('label_colscale').innerHTML = toFixed(colscale, 2);
@@ -497,7 +498,7 @@ function update_vorticity(){
 
 function update_restart(){ 
     init_empty(); 
-    init_circle(frac); 
+    init_circle(); 
     graph_del();
     if (dodraw == false){ update_pause(); }
 }
@@ -514,14 +515,14 @@ function update_pause(){
 }
 
 function update_boxslider(){
-/*    var box = document.getElementById('boxsize');
+    var box = document.getElementById('boxsize');
     var boxsize = Math.floor(lx);
-    var frac = 0.15
+    var frac = 0.2
     box.min = Math.floor(boxsize*(1-frac));
     box.max = Math.floor(boxsize*(1+frac));
     box.step = (2*frac*boxsize/20);
     box.value = boxsize;
-    document.getElementById('label_boxsize').innerHTML = toFixed(lx, 2);*/
+    document.getElementById('label_boxsize').innerHTML = toFixed(lx, 2);
 }
 
 function update_num(){
@@ -598,34 +599,10 @@ function update_allcontrols(){
 
 function create_moshpit(){
     graph_init(); init_empty();
-    n=500; frac=0.15; frameskip = 2;
-    vhappy=1.0; noise=2.0;  flock=0.1; epsilon=100; damp=1.0;dt=0.1;
-    init_sidelength(calc_sidelength()); init_circle(frac);   dovorticity = true; dodraw=false;update_pause();
+    n=600; frameskip = 2;
+    vhappy=1.0; noise=7.0;  flock=0.1; epsilon=100; damp=1.0;dt=0.1;
+    init_sidelength(calc_sidelength()); init_circle();   dovorticity = true; dodraw=false;update_pause();
     showforce = false; update_allcontrols(); graph_del(); graph_clear();
-}
-
-function create_circlepit(){
-    graph_init(); init_empty();
-    n=500; frac=0.15; frameskip = 2; 
-    vhappy=1.0; noise=0.3;  flock=1.0; epsilon=100; damp=1.0;dt=0.1;
-    init_sidelength(calc_sidelength()); init_circle(frac);   dovorticity = true; dodraw=false;update_pause();
-    showforce = false; update_allcontrols(); graph_del(); graph_clear();
-}
-
-function create_chains(){
-    graph_init(); init_empty();
-    n=500; frac=0.01; frameskip=3;
-    vhappy=1.0; noise=0.0;  flock=0.0; epsilon=150; damp=1.0;dt=0.1;
-    init_sidelength(48); init_circle(frac);   showforce = true; dodraw=false;update_pause();
-    dovorticity = false; update_allcontrols(); graph_del(); graph_clear();
-}
-
-function create_crystal(){
-    graph_init(); init_empty();
-    n=500; frac=0.01; frameskip=2;
-    vhappy=0.0; noise=0.0;  flock=0.0; epsilon=100; damp=1.0;dt=0.1;
-    init_sidelength(39.0); init_circle(frac);   showforce = true; dodraw=false;update_pause();
-    dovorticity = false; update_allcontrols(); graph_del(); graph_clear();
 }
 
 function reverse() { for (var i=0; i<n; i++){ vx[i] = -vx[i]; vy[i] = -vy[i];} }
@@ -643,7 +620,7 @@ var init = function() {
 
     init_empty();
     init_sidelength(calc_sidelength());
-    init_circle(frac);
+    init_circle();
     update_allcontrols();
 
     document.body.addEventListener('keyup', function(ev) {
