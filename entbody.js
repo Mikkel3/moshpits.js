@@ -147,10 +147,23 @@ function update(){
     colavg = 0.0;
     var image = [0,0];
     
-    var centerX = lx / 2;
-    var centerY = ly / 2;
+    var mosherCenterX = 0;
+    var mosherCenterY = 0;
+    var mosherCount = 0;
     
-    var mosherCount = 0; 
+    // First pass to calculate the center of mass of moshers
+    for (var i = 0; i < n; i++) {
+        if (type[i] == 1) {
+            mosherCenterX += x[i];
+            mosherCenterY += y[i];
+            mosherCount++;
+        }
+    }
+
+    if (mosherCount > 0) {
+        mosherCenterX /= mosherCount;
+        mosherCenterY /= mosherCount;
+    }
     
     for (var i=0; i<n; i++) {
         //Count number of moshers
@@ -251,12 +264,13 @@ function update(){
             }
         }
 
-        // Apply central attraction force for moshers
+        // Modify the central attraction logic for moshers
         if (type[i] == 1) {
-            var dxCenter = centerX - x[i];
-            var dyCenter = centerY - y[i];
+            var dxCenter = mosherCenterX - x[i];
+            var dyCenter = mosherCenterY - y[i];
             fx[i] += centerAttractionStrength * dxCenter;
             fy[i] += centerAttractionStrength * dyCenter;
+        
 
             // Apply damping to reduce circular motion
             var distanceFromCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
